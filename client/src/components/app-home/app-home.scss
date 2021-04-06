@@ -1,0 +1,43 @@
+.app-home {
+  @apply h-screen w-screen;
+
+  div.wrapper {
+    @apply h-full w-full flex flex-col-reverse md:flex-row;
+
+    div.start {
+      @apply bg-primary flex-1 flex justify-center items-center;
+      h1 {
+        @apply font-bold text-text-heading-inverse text-xl;
+      }
+    }
+
+    div.end {
+      @apply bg-background h-3/4 md:h-full md:w-1/2 flex flex-col justify-center items-center;
+
+      h1 {
+        letter-spacing: '1px';
+        @apply my-6 font-bold text-text-heading text-4xl;
+
+        span {
+          @apply text-primary font-extrabold;
+        }
+      }
+
+      form.form {
+        @apply h-1/2 w-3/4 rounded-md shadow-lg flex flex-col justify-center items-center;
+
+        h1 {
+          @apply font-bold text-primary text-2xl;
+        }
+
+        input {
+          @apply w-3/4 h-12 appearance-none border-2 border-gray-300 my-3 px-4 shadow-sm text-base hover:border-primary focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent rounded-md;
+        }
+
+        button {
+          @apply w-3/4 h-12 border-2 border-gray-200 my-3 px-4 shadow-sm text-base hover:bg-primary hover:text-text-heading-inverse rounded-md font-bold;
+        }
+      }
+    }
+  }
+}

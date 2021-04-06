@@ -1,0 +1,54 @@
+:host {
+  /* Component styles go here */
+}
+
+div.classroom-header {
+  height: 200px;
+}
+
+div.post {
+  min-height: 400px;
+
+  div.post-header {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  div.post-body {
+    flex: 3 1 auto;
+    height: 40%;
+    width: 100%;
+  }
+
+  div.post-attachments {
+    flex: 2 1 auto;
+    height: 30%;
+    width: 100%;
+
+    div.attachment {
+      flex: 0 0 24rem;
+      width: 18rem;
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+    }
+  }
+
+  div.post-footer {
+    flex: 1 1 auto;
+    height: 10%;
+    width: 100%;
+  }
+}
+
+div.submission-attachments {
+  flex: 2 1 auto;
+  height: 30%;
+  width: 100%;
+
+  div.attachment {
+    flex: 0 0 24rem;
+    width: 18rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+}

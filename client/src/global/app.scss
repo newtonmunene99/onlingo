@@ -1,0 +1,64 @@
+/*
+  Global App CSS
+  ----------------------
+  Use this file for styles that should be applied to all components.
+  For example, "font-family" within the "body" selector is a CSS property
+  most apps will want applied to all components.
+
+  Any global CSS variables should also be applied here.
+*/
+
+html[data-theme='dark'] {
+  --primary-color: #663399;
+  --primary-color-rgb: 102, 51, 153;
+  --primary-color-shade: #5a2d87;
+
+  --secondary-color: #f04141;
+  --secondary-color-rgb: 240, 65, 65;
+  --secondary-color-shade: #d33939;
+
+  --success-color: #10dc60;
+
+  --background-color: #222428;
+  --background-color-inverse: #f4f5f8;
+  --background-color-shade: #1e2023;
+
+  --text-heading-color: white;
+  --text-paragraph-color: white;
+  --text-heading-color-inverse: #222428;
+  --text-paragraph-color-inverse: #222428;
+}
+
+html {
+  --primary-color: #f04141;
+  --primary-color-rgb: 240, 65, 65;
+  --primary-color-shade: #d33939;
+
+  --secondary-color: #663399;
+  --secondary-color-rgb: 102, 51, 153;
+  --secondary-color-shade: #5a2d87;
+
+  --success-color: #10dc60;
+
+  --background-color: #ffffff;
+  --background-color-inverse: #222428;
+  --background-color-shade: #d7d8da;
+
+  --text-heading-color: #222428;
+  --text-paragraph-color: #222428;
+  --text-heading-color-inverse: white;
+  --text-paragraph-color-inverse: white;
+}
+
+@tailwind base;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0px;
+  padding: 0px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+}
