@@ -1,13 +1,17 @@
 import { AxiosError } from 'axios';
-import { Assignment, AssignmentSubmission, IAttachment, IComment, Post, ICommentAttachment } from './interfaces/classroom.interface';
+import { Assignment, AssignmentSubmission, Attachment, IComment, Post, PostCommentAttachment } from './interfaces/classroom.interface';
 
 export const BASE_URL = 'http://localhost:5000';
 export const AUTH_URL = '/api/auth';
 export const LOGIN_URL = '/api/auth/login';
 export const REGISTER_URL = '/api/auth/register';
 export const PROFILE_URL = '/api/profile';
+export const USERS_URL = '/api/users';
 export const CLASSROOMS_URL = '/api/classrooms';
+export const POSTS_URL = '/api/posts';
+export const ATTACHMENTS_URL = '/api/attachments';
 export const CLASSROOM_MEMBERSHIPS_URL = '/api/classroom-members';
+export const GRADES_URL = '/api/grades';
 
 export const HOME_PATH = '/';
 export const REGISTER_PATH = '/register';
@@ -25,8 +29,8 @@ export const isAssignmentSubmission = (object: any): object is AssignmentSubmiss
   return (object as IComment).type === 'AssignmentSubmission';
 };
 
-export const isCommentAttachment = (object: any): object is ICommentAttachment => {
-  return (object as IAttachment).type === 'CommentAttachment';
+export const isCommentAttachment = (object: any): object is PostCommentAttachment => {
+  return (object as Attachment).type === 'PostCommentAttachment';
 };
 
 export const toDatetimeLocal = (date: Date) => {

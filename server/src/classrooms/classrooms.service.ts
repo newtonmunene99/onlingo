@@ -1,5 +1,3 @@
-// @collapse
-
 import {
   BadRequestException,
   ForbiddenException,
@@ -39,6 +37,7 @@ import { AssignmentSubmissionAttachment } from 'src/classrooms/entities/assignme
 import { Grade } from './entities/grade.entity';
 import { VideoSession } from './entities/video-session.entity';
 import { VideoSessionParticipant } from './entities/video-session-participant.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ClassroomsService {
@@ -84,7 +83,7 @@ export class ClassroomsService {
 
   async createNewClassroom(
     { email }: UserWithRole,
-    { name, description }: ClassroomDTO,
+    { name, unitCode, description }: ClassroomDTO,
   ): Promise<Classroom> {
     const user = await this.usersService.findOneByEmail(email);
 
@@ -118,6 +117,7 @@ export class ClassroomsService {
     let classroom = new Classroom();
     classroom.code = classroomCode;
     classroom.name = name;
+    classroom.unitCode = unitCode;
     classroom.description = description;
 
     let classroomMember = new ClassroomMember();
@@ -463,13 +463,64 @@ export class ClassroomsService {
     { points, comments }: GradeDTO,
   ): Promise<Grade> {
     let grade = new Grade();
-    grade.assignmentSubmisstion = assignmentSubmission;
+    grade.assignmentSubmission = assignmentSubmission;
     grade.points = points;
     grade.comments = comments;
 
     grade = await this.gradesRepository.save(grade);
 
     return grade;
+  }
+
+  async findAllPosts(): Promise<Post[]> {
+    return this.postsRepository.find({
+      relations: [
+        'author',
+        'author.user',
+        'comments',
+        'comments.author',
+        'comments.author.user',
+        'attachments',
+      ],
+    });
+  }
+
+  async findAllAttachments(): Promise<Attachment[]> {
+    const postAttachments = await this.postAttachmentsRepository.find({
+      relations: ['post', 'post.author', 'post.author.user'],
+    });
+
+    const postCommentAttachments = await this.postCommentAttachmentsRepository.find(
+      {
+        relations: [
+          'postComment',
+          'postComment.post',
+          'postComment.post.author',
+          'postComment.post.author.user',
+          'postComment.author',
+          'postComment.author.user',
+        ],
+      },
+    );
+
+    const assignmentSubmissionAttachments = await this.assignmentSubmissionAttachmentsRepository.find(
+      {
+        relations: [
+          'assignmentSubmission',
+          'assignmentSubmission.assignment',
+          'assignmentSubmission.assignment.author',
+          'assignmentSubmission.assignment.author.user',
+          'assignmentSubmission.author',
+          'assignmentSubmission.author.user',
+        ],
+      },
+    );
+
+    return [
+      ...postAttachments,
+      ...postCommentAttachments,
+      ...assignmentSubmissionAttachments,
+    ];
   }
 
   async findPostsByClassroom(
@@ -663,6 +714,25 @@ export class ClassroomsService {
     );
   }
 
+  async findUserGrades(user: User): Promise<Grade[]> {
+    return this.gradesRepository.find({
+      relations: [
+        'assignmentSubmission',
+        'assignmentSubmission.author',
+        'assignmentSubmission.author.user',
+        'assignmentSubmission.author.classroom',
+        'assignmentSubmission.assignment',
+        'assignmentSubmission.attachments',
+      ],
+
+      where: (qb: SelectQueryBuilder<Grade>) => {
+        qb.where('Grade__assignmentSubmission__author.user = :user', {
+          user: user.id,
+        });
+      },
+    });
+  }
+
   findPostById(id: number): Promise<Post> {
     return this.postsRepository.findOne(id, {
       relations: [
@@ -712,6 +782,22 @@ export class ClassroomsService {
         'post.comments.author.user',
       ],
     });
+  }
+
+  findAssignmentSubmissionAttachmentById(
+    attachmentId: number,
+  ): Promise<AssignmentSubmissionAttachment> {
+    return this.assignmentSubmissionAttachmentsRepository.findOne(
+      attachmentId,
+      {
+        relations: [
+          'assignmentSubmission',
+          'assignmentSubmission.author',
+          'assignmentSubmission.author.user',
+          'assignmentSubmission.assignment',
+        ],
+      },
+    );
   }
 
   async updateClassroom(classroom: Classroom): Promise<Classroom> {

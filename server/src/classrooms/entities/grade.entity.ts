@@ -14,7 +14,7 @@ export class Grade extends AppBaseEntity {
     },
   )
   @JoinColumn()
-  assignmentSubmisstion: AssignmentSubmission;
+  assignmentSubmission: AssignmentSubmission;
 
   @Column({ nullable: false, default: 0 })
   points: number;

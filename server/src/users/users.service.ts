@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Equal, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { UserDTO } from 'src/users/dto/user.dto';
 import { hash } from 'bcrypt';
@@ -25,6 +25,8 @@ export class UsersService {
     email,
     firstName,
     lastName,
+    dob,
+    gender,
     password: preferredPassword,
   }: UserDTO): Promise<User> {
     const existingUsers = await this.findAll();
@@ -41,6 +43,8 @@ export class UsersService {
     user.email = email;
     user.firstName = firstName;
     user.lastName = lastName;
+    user.gender = gender;
+    user.dob = new Date(dob);
     user.password = password;
     user.role = UserRole.ADMIN;
 
@@ -53,6 +57,8 @@ export class UsersService {
     email,
     firstName,
     lastName,
+    dob,
+    gender,
     password: preferredPassword,
   }: UserDTO): Promise<User> {
     const existingUser = await this.findOneByEmail(email);
@@ -69,6 +75,8 @@ export class UsersService {
     user.email = email;
     user.firstName = firstName;
     user.lastName = lastName;
+    user.gender = gender;
+    user.dob = new Date(dob);
     user.password = password;
     user.role = UserRole.ADMIN;
 
@@ -81,14 +89,16 @@ export class UsersService {
     email,
     firstName,
     lastName,
+    dob,
+    gender,
     password: preferredPassword,
   }: UserDTO): Promise<User> {
+    let userRole = UserRole.USER;
+
     const admins = await this.usersRepository.find({ role: UserRole.ADMIN });
 
     if (!admins?.length) {
-      throw new ForbiddenException(
-        `You are not allowed to perform this operation`,
-      );
+      userRole = UserRole.ADMIN;
     }
 
     const existingUser = await this.findOneByEmail(email);
@@ -105,8 +115,10 @@ export class UsersService {
     user.email = email;
     user.firstName = firstName;
     user.lastName = lastName;
+    user.gender = gender;
+    user.dob = new Date(dob);
     user.password = password;
-    user.role = UserRole.USER;
+    user.role = userRole;
 
     user = await this.usersRepository.save(user);
 
@@ -114,9 +126,7 @@ export class UsersService {
   }
 
   async updateUser(user: User): Promise<User> {
-    const updatedUser = await this.usersRepository.save(user);
-
-    return updatedUser;
+    return this.usersRepository.save(user);
   }
 
   async hashPassword(
@@ -136,19 +146,46 @@ export class UsersService {
       where: {
         email: { $in: emails },
       },
-      select: ['firstName', 'lastName', 'email', 'id', 'role'],
+      select: [
+        'firstName',
+        'lastName',
+        'email',
+        'id',
+        'role',
+        'dob',
+        'gender',
+        'createdAt',
+      ],
     });
   }
 
   findAll(): Promise<User[]> {
     return this.usersRepository.find({
-      select: ['firstName', 'lastName', 'email', 'id', 'role'],
+      select: [
+        'firstName',
+        'lastName',
+        'email',
+        'id',
+        'role',
+        'dob',
+        'gender',
+        'createdAt',
+      ],
     });
   }
 
   findOneById(id: number): Promise<User | undefined> {
     return this.usersRepository.findOne(id, {
-      select: ['firstName', 'lastName', 'email', 'id', 'role'],
+      select: [
+        'firstName',
+        'lastName',
+        'email',
+        'id',
+        'role',
+        'dob',
+        'gender',
+        'createdAt',
+      ],
     });
   }
 
@@ -160,7 +197,17 @@ export class UsersService {
       return this.usersRepository.findOne(
         { email },
         {
-          select: ['firstName', 'lastName', 'email', 'id', 'role', 'password'],
+          select: [
+            'firstName',
+            'lastName',
+            'email',
+            'id',
+            'role',
+            'dob',
+            'gender',
+            'createdAt',
+            'password',
+          ],
         },
       );
     }
@@ -168,12 +215,21 @@ export class UsersService {
     return this.usersRepository.findOne(
       { email },
       {
-        select: ['firstName', 'lastName', 'email', 'id', 'role'],
+        select: [
+          'firstName',
+          'lastName',
+          'email',
+          'id',
+          'role',
+          'dob',
+          'gender',
+          'createdAt',
+        ],
       },
     );
   }
 
-  async remove(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+  async deleteUser(user: User): Promise<void> {
+    await this.usersRepository.remove(user);
   }
 }

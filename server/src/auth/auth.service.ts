@@ -109,7 +109,7 @@ export class AuthService {
 
     if (!authenticatedUser) {
       throw new UnauthorizedException(
-        'You are not authorized to perform this operation',
+        'Wrong password. Please reset your password if you cannot remember',
       );
     }
 

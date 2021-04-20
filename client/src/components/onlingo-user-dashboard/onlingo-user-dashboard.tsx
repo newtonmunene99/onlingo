@@ -14,6 +14,7 @@ export class OnlingoUserDashboard {
   @State() editClassroomModalOpen = false;
 
   @State() classroomName = '';
+  @State() unitCode = '';
   @State() classroomDescription = '';
 
   @State() classroomCode = '';
@@ -91,6 +92,7 @@ export class OnlingoUserDashboard {
       await apiService.createNewClassroom({
         name: this.classroomName,
         description: this.classroomDescription,
+        unitCode: this.unitCode,
       });
 
       Swal.close();
@@ -156,6 +158,7 @@ export class OnlingoUserDashboard {
           return await apiService.updateClassroom(this.editClassroom.code, {
             name: this.editClassroom.name,
             description: this.editClassroom.description,
+            unitCode: this.editClassroom.unitCode,
           });
         } catch (error) {
           const errorMessage = error?.response?.data?.message;
@@ -182,6 +185,7 @@ export class OnlingoUserDashboard {
   clearVariables = () => {
     this.classroomName = '';
     this.classroomDescription = '';
+    this.unitCode = '';
   };
 
   clearEnrollVariables = () => {
@@ -222,12 +226,14 @@ export class OnlingoUserDashboard {
             <div class="classroom flex flex-col rounded-md shadow-md hover:shadow-lg bg-white">
               <div class={`h-1/3 ${classroomMembership?.role === 'facilitator' ? 'bg-secondary' : 'bg-secondary-shade'} rounded-t-md p-8 flex flex-col justify-end`}>
                 <h1 class="font-bold text-2xl text-text-heading-inverse">{classroomMembership?.classroom?.code}</h1>
-                <p class="text-text-paragraph-inverse">{classroomMembership?.role}</p>
+                <p class="text-text-paragraph-inverse ">{classroomMembership?.role}</p>
               </div>
               <div class="flex flex-col flex-1 p-8">
                 <div class="flex-1">
                   <stencil-route-link url={`/user/classrooms/${classroomMembership?.classroom?.code}`}>
-                    <a class="font-bold text-text-heading hover:text-primary">{classroomMembership?.classroom?.name}</a>
+                    <a class="font-bold text-text-heading hover:text-primary">
+                      <span class="font-extrabold text-lg text-primary">{classroomMembership?.classroom?.unitCode}</span> {classroomMembership?.classroom?.name}
+                    </a>
                   </stencil-route-link>
                   <p>{classroomMembership?.classroom?.description}</p>
                 </div>
@@ -358,6 +364,21 @@ export class OnlingoUserDashboard {
                       </div>
                       <div class="flex flex-col">
                         <label htmlFor="classroomDescription" class="block text-sm font-medium text-gray-700">
+                          Unit Code
+                        </label>
+                        <input
+                          type="text"
+                          name="unitCode"
+                          id="unitCode"
+                          class="w-full h-12 appearance-none border-2 border-gray-300 my-3 px-4 shadow-sm text-base hover:border-primary focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent rounded-md"
+                          value={this.unitCode}
+                          onInput={e => {
+                            this.unitCode = (e.target as HTMLInputElement).value;
+                          }}
+                        />
+                      </div>
+                      <div class="flex flex-col">
+                        <label htmlFor="classroomDescription" class="block text-sm font-medium text-gray-700">
                           Classroom Description
                         </label>
                         <input
@@ -434,6 +455,24 @@ export class OnlingoUserDashboard {
                             this.editClassroom = {
                               ...this.editClassroom,
                               name: (e.target as HTMLInputElement).value,
+                            };
+                          }}
+                        />
+                      </div>
+                      <div class="flex flex-col">
+                        <label htmlFor="unitCode" class="block text-sm font-medium text-gray-700">
+                          Unit Code
+                        </label>
+                        <input
+                          type="text"
+                          name="unitCode"
+                          id="unitCode"
+                          class="w-full h-12 appearance-none border-2 border-gray-300 my-3 px-4 shadow-sm text-base hover:border-primary focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent rounded-md"
+                          value={this.editClassroom?.unitCode}
+                          onInput={e => {
+                            this.editClassroom = {
+                              ...this.editClassroom,
+                              unitCode: (e.target as HTMLInputElement).value,
                             };
                           }}
                         />

@@ -5,6 +5,11 @@ export interface IClassroomMembershipsResponse {
   classroomMembers: ClassroomMember[];
 }
 
+export interface IClassroomsResponse {
+  status: string;
+  classrooms: Classroom[];
+}
+
 export interface IClassroomResponse {
   status: string;
   classroom: Classroom;
@@ -20,9 +25,12 @@ export interface Classroom {
   createdAt: string;
   name: string;
   code: string;
+  unitCode: string;
   description: string;
   members?: ClassroomMember[];
 }
+
+export type ClassroomWithPopUpOptions = Classroom & { popupOpen: boolean };
 
 export interface ClassroomMember {
   id: number;
@@ -35,6 +43,7 @@ export interface ClassroomMember {
 
 export interface ClassroomPayload {
   name: string;
+  unitCode: string;
   description: string;
 }
 
@@ -42,6 +51,20 @@ export type PostWithPopUpOptions = PostOrAssignment;
 
 export type PostOrAssignment = (Assignment & { popupOpen: boolean }) | (Post & { popupOpen: boolean });
 
+export interface PostPayload {
+  title: string;
+  body: string;
+}
+
+export interface PostResponse {
+  status: string;
+  post: Post;
+}
+
+export interface PostsResponse {
+  status: string;
+  posts: Post[];
+}
 export interface Post {
   id: number;
   createdAt: string;
@@ -49,7 +72,7 @@ export interface Post {
   body: string;
   author: ClassroomMember;
   comments: IComment[];
-  attachments: IAttachment[];
+  attachments: Attachment[];
   type: 'Post' | 'Assignment';
 }
 
@@ -60,32 +83,54 @@ export interface Assignment extends Post {
 }
 
 export interface AssignmentSubmission extends IComment {
-  post: Assignment;
+  assignment: Assignment;
   grade: Grade;
-  attachments: IAttachment[];
+  attachments: AssignmentSubmissionAttachment[];
 }
 
+export type GradeWithPopUpOptions = Grade & { popupOpen: boolean };
 export interface Grade {
   assignmentSubmission: AssignmentSubmission;
   points: number;
   comments: string | null;
+  createdAt: string;
 }
 
-export interface IAttachment {
+export interface AttachmentResponse {
+  status: string;
+  attachment: Attachment;
+}
+
+export interface AttachmentsResponse {
+  status: string;
+  attachments: Attachment[];
+}
+
+export type AttachmentWithPopUpOptions = Attachment & { popupOpen: boolean };
+export interface Attachment {
   id: number;
   createdAt: string;
-  post: Post;
   title: string;
   originalFileName: string;
   fileName: string;
   path: string;
   mimeType: string;
   size: number;
-  type: 'Attachment' | 'CommentAttachment';
+  type: 'PostAttachment' | 'PostCommentAttachment' | 'AssignmentSubmissionAttachment';
+  post?: Post;
+  assignmentSubmission?: AssignmentSubmission;
 }
 
-export interface ICommentAttachment extends IAttachment {
-  comment: IComment;
+export interface PostAttachment extends Attachment {
+  post: Post;
+}
+
+export interface PostCommentAttachment extends Attachment {
+  postComment: PostComment;
+}
+
+export interface AssignmentSubmissionAttachment extends Attachment {
+  assignmentSubmission: AssignmentSubmission;
 }
 
 export interface GradePayload {
@@ -101,21 +146,6 @@ export interface GradeResponse {
 export interface GradesResponse {
   status: string;
   grades: Grade[];
-}
-
-export interface PostPayload {
-  title: string;
-  body: string;
-}
-
-export interface IPostResponse {
-  status: string;
-  post: Post;
-}
-
-export interface IPostsResponse {
-  status: string;
-  posts: Post[];
 }
 
 export type AssignmentWithPopUpOptions = Assignment & { popupOpen: boolean };
@@ -140,10 +170,14 @@ export type CommentWithPopUpOptions = IComment & { popupOpen: boolean };
 export interface IComment {
   id: number;
   createdAt: string;
-  body: string;
   author: ClassroomMember;
+  body: string;
+  type: 'PostComment' | 'AssignmentSubmission';
+}
+
+export interface PostComment extends IComment {
   post: Post;
-  type: 'Comment' | 'AssignmentSubmission';
+  attachments: PostCommentAttachment[];
 }
 
 export interface CommentPayload {

@@ -1,23 +1,36 @@
 import axios, { AxiosInstance, AxiosResponse, CancelTokenSource } from 'axios';
 import Cookies from 'universal-cookie';
-import { CLASSROOM_MEMBERSHIPS_URL, BASE_URL, LOGIN_URL, REGISTER_URL, PROFILE_URL, CLASSROOMS_URL, AUTH_URL } from '../constants';
-import { UserResponse, IUserProfileResponse, User } from '../interfaces/user.interface';
-import { IResetPasswordPayload } from '../interfaces/auth.interface';
+import {
+  CLASSROOM_MEMBERSHIPS_URL,
+  BASE_URL,
+  LOGIN_URL,
+  REGISTER_URL,
+  PROFILE_URL,
+  CLASSROOMS_URL,
+  AUTH_URL,
+  USERS_URL,
+  POSTS_URL,
+  ATTACHMENTS_URL,
+  GRADES_URL,
+} from '../constants';
+import { UserResponse, IUserProfileResponse, User, UsersResponse, UserPayload } from '../interfaces/user.interface';
+import { IAuthPayload, IUserRegisterPayload, IResetPasswordPayload, IChangePasswordPayload } from '../interfaces/auth.interface';
 import {
   ClassroomMember,
   ClassroomPayload,
   IClassroomMembershipsResponse,
+  IClassroomsResponse,
   IClassroomResponse,
   Classroom,
   IEnrollToClassResponse,
   PostPayload,
-  IPostResponse,
-  IPostsResponse,
+  PostResponse,
+  PostsResponse,
   Post,
   CommentPayload,
   ICommentResponse,
   IComment,
-  IAttachment,
+  Attachment,
   IAssignmentResponse,
   IAssignmentsResponse,
   Assignment,
@@ -25,21 +38,11 @@ import {
   GradePayload,
   GradeResponse,
   Grade,
+  AttachmentsResponse,
+  AttachmentResponse,
+  GradesResponse,
 } from '../interfaces/classroom.interface';
 import IO from 'socket.io-client';
-
-interface IAuthPayload {
-  email: string;
-  password: string;
-}
-
-interface IRegisterPayload {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
-
 class ApiService {
   private https: AxiosInstance = axios.create();
   private baseUrl: string;
@@ -82,7 +85,7 @@ class ApiService {
     return user;
   }
 
-  async register(registerPayload: IRegisterPayload): Promise<User> {
+  async register(registerPayload: IUserRegisterPayload): Promise<User> {
     const response = await this.https.post(REGISTER_URL, JSON.stringify(registerPayload));
 
     const { accessToken } = response.data;
@@ -114,9 +117,49 @@ class ApiService {
       console.error(error);
 
       this.logout();
+      this.logout();
 
       window.location.replace('/');
     }
+  }
+
+  async getAllUsers(source?: CancelTokenSource): Promise<User[]> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.get<any, AxiosResponse<UsersResponse>>(USERS_URL, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    return response.data.users;
+  }
+
+  async updateUser(userId: number, updateUserPayload: Omit<UserPayload, 'email'>, source?: CancelTokenSource): Promise<User> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.patch<any, AxiosResponse<UserResponse>>(USERS_URL + `/${userId}`, JSON.stringify(updateUserPayload), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    return response.data.user;
+  }
+
+  async deleteUser(userId: number, source?: CancelTokenSource): Promise<void> {
+    const accessToken = cookies.get('accessToken');
+
+    await this.https.delete<any, AxiosResponse<Omit<UserResponse, 'user'>>>(USERS_URL + `/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    return;
   }
 
   async getClassroomMemberships(source?: CancelTokenSource): Promise<ClassroomMember[]> {
@@ -143,6 +186,19 @@ class ApiService {
     });
 
     return response.data.classroom;
+  }
+
+  async getAllClassrooms(source?: CancelTokenSource): Promise<Classroom[]> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.get<any, AxiosResponse<IClassroomsResponse>>(CLASSROOMS_URL, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    return response.data.classrooms;
   }
 
   async enrollToClassroom(code: string, source?: CancelTokenSource): Promise<ClassroomMember> {
@@ -175,7 +231,7 @@ class ApiService {
   async updateClassroom(classroomCode: string, classroomPayload: ClassroomPayload, source?: CancelTokenSource): Promise<Post> {
     const accessToken = cookies.get('accessToken');
 
-    const response = await this.https.patch<any, AxiosResponse<IPostResponse>>(CLASSROOMS_URL + `/${classroomCode}`, JSON.stringify(classroomPayload), {
+    const response = await this.https.patch<any, AxiosResponse<PostResponse>>(CLASSROOMS_URL + `/${classroomCode}`, JSON.stringify(classroomPayload), {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -201,7 +257,7 @@ class ApiService {
   async createNewPost(classroomCode: string, post: PostPayload, source?: CancelTokenSource): Promise<Post> {
     const accessToken = cookies.get('accessToken');
 
-    const response = await this.https.post<any, AxiosResponse<IPostResponse>>(CLASSROOM_MEMBERSHIPS_URL + `/classroom/${classroomCode}/posts`, JSON.stringify(post), {
+    const response = await this.https.post<any, AxiosResponse<PostResponse>>(CLASSROOM_MEMBERSHIPS_URL + `/classroom/${classroomCode}/posts`, JSON.stringify(post), {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -231,7 +287,7 @@ class ApiService {
   async getClassroomPosts(classroomCode: string, source?: CancelTokenSource): Promise<Post[]> {
     const accessToken = cookies.get('accessToken');
 
-    const response = await this.https.get<any, AxiosResponse<IPostsResponse>>(CLASSROOMS_URL + `/${classroomCode}/posts`, {
+    const response = await this.https.get<any, AxiosResponse<PostsResponse>>(CLASSROOMS_URL + `/${classroomCode}/posts`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -239,6 +295,78 @@ class ApiService {
     });
 
     return response.data.posts;
+  }
+
+  async getAllPosts(source?: CancelTokenSource): Promise<Post[]> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.get<any, AxiosResponse<PostsResponse>>(POSTS_URL, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    return response.data.posts;
+  }
+
+  async deletePost(postId: number, source?: CancelTokenSource): Promise<void> {
+    const accessToken = cookies.get('accessToken');
+
+    await this.https.delete<any, AxiosResponse<Omit<PostResponse, 'post'>>>(POSTS_URL + `/${postId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+  }
+
+  async getAllAttachments(source?: CancelTokenSource): Promise<Attachment[]> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.get<any, AxiosResponse<AttachmentsResponse>>(ATTACHMENTS_URL, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    return response.data.attachments;
+  }
+
+  async downloadAttachment(attachment: Attachment, source?: CancelTokenSource): Promise<void> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.get<any, AxiosResponse<any>>(ATTACHMENTS_URL + `/${attachment.id}/download`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      responseType: 'blob',
+      cancelToken: source?.token,
+    });
+
+    const { data } = response;
+    const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', attachment.originalFileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return;
+  }
+
+  async deleteAttachment(attachmentId: number, source?: CancelTokenSource): Promise<void> {
+    const accessToken = cookies.get('accessToken');
+
+    await this.https.delete<any, AxiosResponse<Omit<AttachmentResponse, 'attachment'>>>(ATTACHMENTS_URL + `/${attachmentId}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    return;
   }
 
   async getClassroomAssignments(classroomCode: string, source?: CancelTokenSource): Promise<Assignment[]> {
@@ -257,7 +385,7 @@ class ApiService {
   async updateClassroomPost(classroomCode: string, postId: number, postPayload: PostPayload, source?: CancelTokenSource): Promise<Post> {
     const accessToken = cookies.get('accessToken');
 
-    const response = await this.https.patch<any, AxiosResponse<IPostResponse>>(CLASSROOMS_URL + `/${classroomCode}/posts/${postId}`, JSON.stringify(postPayload), {
+    const response = await this.https.patch<any, AxiosResponse<PostResponse>>(CLASSROOMS_URL + `/${classroomCode}/posts/${postId}`, JSON.stringify(postPayload), {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -284,6 +412,21 @@ class ApiService {
     return response.data.grade;
   }
 
+  async getUserGrades(user: User, source?: CancelTokenSource): Promise<Grade[]> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.get<any, AxiosResponse<GradesResponse>>(GRADES_URL + `?userId=${user.id}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      cancelToken: source?.token,
+    });
+
+    console.log(response);
+
+    return response.data.grades;
+  }
+
   async updateClassroomAssignment(classroomCode: string, assignmentId: number, assignmentPayload: AssignmentPayload, source?: CancelTokenSource): Promise<Assignment> {
     const accessToken = cookies.get('accessToken');
 
@@ -304,7 +447,7 @@ class ApiService {
   async deleteClassroomPost(classroomCode: string, postId: number, source?: CancelTokenSource): Promise<void> {
     const accessToken = cookies.get('accessToken');
 
-    await this.https.delete<any, AxiosResponse<Omit<IPostResponse, 'post'>>>(CLASSROOMS_URL + `/${classroomCode}/posts/${postId}`, {
+    await this.https.delete<any, AxiosResponse<Omit<PostResponse, 'post'>>>(CLASSROOMS_URL + `/${classroomCode}/posts/${postId}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -423,7 +566,7 @@ class ApiService {
     return;
   }
 
-  async downloadAttachment(classroomCode: string, postId: number, attachment: IAttachment, source?: CancelTokenSource): Promise<void> {
+  async downloadPostAttachment(classroomCode: string, postId: number, attachment: Attachment, source?: CancelTokenSource): Promise<void> {
     const accessToken = cookies.get('accessToken');
 
     const response = await this.https.get<any, AxiosResponse<any>>(CLASSROOMS_URL + `/${classroomCode}/posts/${postId}/attachments/${attachment.id}`, {
@@ -445,7 +588,38 @@ class ApiService {
     return;
   }
 
-  async deleteAttachment(classroomCode: string, postId: number, attachment: IAttachment, source?: CancelTokenSource): Promise<void> {
+  async downloadAssignmentSubmissionAttachment(
+    classroomCode: string,
+    assignmentId: number,
+    submissionId: number,
+    attachment: Attachment,
+    source?: CancelTokenSource,
+  ): Promise<void> {
+    const accessToken = cookies.get('accessToken');
+
+    const response = await this.https.get<any, AxiosResponse<any>>(
+      CLASSROOMS_URL + `/${classroomCode}/assignments/${assignmentId}/submissions/${submissionId}/attachments/${attachment.id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        responseType: 'blob',
+        cancelToken: source?.token,
+      },
+    );
+
+    const { data } = response;
+    const downloadUrl = window.URL.createObjectURL(new Blob([data]));
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', attachment.originalFileName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    return;
+  }
+
+  async deletePostAttachment(classroomCode: string, postId: number, attachment: Attachment, source?: CancelTokenSource): Promise<void> {
     const accessToken = cookies.get('accessToken');
 
     await this.https.delete<any, AxiosResponse<any>>(CLASSROOMS_URL + `/${classroomCode}/posts/${postId}/attachments/${attachment.id}`, {
@@ -457,6 +631,23 @@ class ApiService {
     });
 
     return;
+  }
+
+  async changePassword(changePasswordPayload: IChangePasswordPayload, source?: CancelTokenSource): Promise<void> {
+    const accessToken = cookies.get('accessToken');
+
+    try {
+      await this.https.put<any, AxiosResponse<Omit<UserResponse, 'user'>>>(`${AUTH_URL}/password-change`, JSON.stringify(changePasswordPayload), {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        cancelToken: source?.token,
+      });
+
+      return;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async resetPasswordInitiate(email: string, source?: CancelTokenSource): Promise<void> {

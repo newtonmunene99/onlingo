@@ -10,22 +10,10 @@ import { apiService } from '../../services/api';
 export class OnlingoLogin {
   @Prop() redirectUrl: string;
 
-  @State() firstName: string;
-  @State() lastName: string;
-  @State() email: string;
-  @State() password: string;
-
   private handleRegister = async (event: Event) => {
     event.preventDefault();
 
-    if (!this.email || !this.password) {
-      Swal.fire({
-        title: 'Fill in all fields',
-        html: 'Please fill in all required fields',
-        icon: 'error',
-      });
-      return;
-    }
+    var data = new FormData(event.target as HTMLFormElement);
 
     Swal.fire({
       title: 'Please wait!',
@@ -39,10 +27,12 @@ export class OnlingoLogin {
     Swal.showLoading();
     try {
       const { role } = await apiService.register({
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-        password: this.password,
+        firstName: data.get('firstName').toString(),
+        lastName: data.get('lastName').toString(),
+        email: data.get('email').toString(),
+        dob: data.get('dob').toString(),
+        gender: data.get('gender').toString() as 'male' | 'female',
+        password: data.get('password').toString(),
       });
 
       Swal.close();
@@ -65,59 +55,21 @@ export class OnlingoLogin {
       <div class="onlingo-register">
         <form class="form" onSubmit={this.handleRegister}>
           <h1>Register</h1>
-          <input
-            type="text"
-            name="firstName"
-            id="firstName"
-            placeholder="First Name"
-            value={this.firstName}
-            autocomplete="given-name"
-            onInput={e => {
-              const target = e.target as HTMLInputElement;
+          <input type="text" name="firstName" id="firstName" placeholder="First Name" autocomplete="given-name" required />
+          <input type="text" name="lastName" id="lastName" placeholder="Last Name" autocomplete="family-name" required />
 
-              this.firstName = target.value;
-            }}
-          />
-          <input
-            type="text"
-            name="lastName"
-            id="lastName"
-            placeholder="Last Name"
-            value={this.lastName}
-            autocomplete="family-name"
-            onInput={e => {
-              const target = e.target as HTMLInputElement;
+          <input type="email" name="email" id="email" placeholder="Your email" autocomplete="email" required />
 
-              this.lastName = target.value;
-            }}
-          />
+          <label htmlFor="dob">Date Of Birth?</label>
+          <input type="date" name="dob" id="dob" placeholder="Date Of Birth" autocomplete="bday" required />
 
-          <input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Your email"
-            value={this.email}
-            autocomplete="email"
-            onInput={e => {
-              const target = e.target as HTMLInputElement;
+          <label htmlFor="gender">What gender are you?</label>
+          <select name="gender" id="gender" autocomplete="sex" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
 
-              this.email = target.value;
-            }}
-          />
-          <input
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Your password"
-            value={this.password}
-            autocomplete="new-password"
-            onInput={e => {
-              const target = e.target as HTMLInputElement;
-
-              this.password = target.value;
-            }}
-          />
+          <input type="password" name="password" id="password" placeholder="Your password" autocomplete="new-password" required />
           <stencil-route-link url="/">
             <a class="text-text-paragraph hover:text-primary font-bold">Already have an account?</a>
           </stencil-route-link>

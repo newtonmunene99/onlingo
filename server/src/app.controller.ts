@@ -75,7 +75,7 @@ export class AppController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('auth/password-change')
+  @Put('auth/password-change')
   @UsePipes(ValidationPipe)
   async changePassword(
     @User() user: UserWithRole,

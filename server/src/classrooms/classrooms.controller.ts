@@ -115,6 +115,7 @@ export class ClassroomsController {
     if (classroomMember || appUser.role === UserRole.ADMIN) {
       classroom.name = classroomDto.name;
       classroom.description = classroomDto.description;
+      classroom.unitCode = classroomDto.unitCode;
       const updatedClassroom = await this.classroomsService.updateClassroom(
         classroom,
       );
@@ -219,6 +220,84 @@ export class ClassroomsController {
 
     throw new ForbiddenException(
       `You are not allowed to download attachments for another post`,
+    );
+  }
+
+  @Get(
+    ':code/assignments/:assignmentId/submissions/:submissionId/attachments/:attachmentId',
+  )
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  async downloadAssignmentSubmissionAttachment(
+    @User() appUser: UserWithRole,
+    @Param('code') code: string,
+    @Param('assignmentId', ParseIntPipe) assignmentId: number,
+    @Param('submissionId', ParseIntPipe) submissionId: number,
+    @Param('attachmentId', ParseIntPipe) attachmentId: number,
+    @Res() res: Response,
+  ): Promise<void> {
+    const classroom = await this.classroomsService.findOneByClassCode(code);
+
+    if (!classroom) {
+      throw new NotFoundException(`Classroom with code ${code} does not exist`);
+    }
+
+    const assignment = await this.classroomsService.findAssignmentById(
+      assignmentId,
+    );
+
+    if (!assignment) {
+      throw new NotFoundException(
+        `Assignment with id ${assignmentId} does not exist`,
+      );
+    }
+
+    const submission = await this.classroomsService.findAssignmentSubmissionById(
+      submissionId,
+    );
+
+    if (!submission) {
+      throw new NotFoundException(
+        `Assignment Submission with id ${submissionId} does not exist`,
+      );
+    }
+
+    const attachment = await this.classroomsService.findAssignmentSubmissionAttachmentById(
+      attachmentId,
+    );
+
+    if (!attachment) {
+      throw new NotFoundException(
+        `Attachment with id ${attachmentId} does not exist`,
+      );
+    }
+
+    const classroomMember = classroom.members.find(
+      (member) => member.user.id == appUser.id,
+    );
+
+    if (classroomMember || appUser.role === UserRole.ADMIN) {
+      const stats = await promises.stat(attachment.path);
+
+      if (!stats.isFile) {
+        throw new NotFoundException('File unavailable');
+      }
+
+      res.setHeader('Content-Length', stats.size);
+      res.setHeader('Content-Type', attachment.mimeType);
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${attachment.originalFileName}`,
+      );
+
+      const stream = createReadStream(attachment.path);
+
+      stream.pipe(res);
+      return;
+    }
+
+    throw new ForbiddenException(
+      `You are not allowed to download attachments for another classroom`,
     );
   }
 

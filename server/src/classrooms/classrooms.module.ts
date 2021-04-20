@@ -17,6 +17,9 @@ import { AssignmentSubmissionAttachment } from 'src/classrooms/entities/assignme
 import { ClassroomsGateway } from './classrooms.gateway';
 import { VideoSession } from './entities/video-session.entity';
 import { VideoSessionParticipant } from './entities/video-session-participant.entity';
+import { PostsController } from './posts.controller';
+import { AttachmentsController } from './attachments.controller';
+import { GradesController } from './grades.controller';
 
 @Module({
   imports: [
@@ -37,7 +40,12 @@ import { VideoSessionParticipant } from './entities/video-session-participant.en
     ]),
     UsersModule,
   ],
-  controllers: [ClassroomsController],
+  controllers: [
+    ClassroomsController,
+    PostsController,
+    AttachmentsController,
+    GradesController,
+  ],
   providers: [ClassroomsService, ClassroomsGateway],
   exports: [ClassroomsService, TypeOrmModule],
 })

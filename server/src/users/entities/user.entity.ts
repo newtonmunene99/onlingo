@@ -1,6 +1,6 @@
 import { AppBaseEntity } from 'src/base.entity';
 import { Column, Entity, Index } from 'typeorm';
-import { UserRole } from 'src/users/interfaces/user-role.interface';
+import { UserGender, UserRole } from 'src/users/interfaces/user-role.interface';
 
 @Entity()
 export class User extends AppBaseEntity {
@@ -16,6 +16,15 @@ export class User extends AppBaseEntity {
 
   @Column({ select: false })
   password: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserGender,
+  })
+  gender: UserGender;
+
+  @Column({ type: 'date' })
+  dob: Date;
 
   @Column({
     type: 'enum',

@@ -1,6 +1,5 @@
 import { Component, h, State } from '@stencil/core';
 import { Student } from '../../interfaces/student.interface';
-import { apiService } from '../../services/api';
 
 @Component({
   tag: 'onlingo-admin-students',

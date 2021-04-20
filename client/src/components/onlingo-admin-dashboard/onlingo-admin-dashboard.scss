@@ -1,3 +1,15 @@
 :host {
-    /* Component styles go here */
+  /* Component styles go here */
+}
+
+div.onlingo-admin-dashboard {
+  div.dashboard-items {
+    margin-bottom: 200px;
+    div.dashboard-item {
+      flex: 1 0 25%;
+      min-height: 150px;
+      padding: 1rem;
+      margin: 0.5rem;
+    }
+  }
 }

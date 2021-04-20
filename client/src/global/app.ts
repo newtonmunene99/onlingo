@@ -1,4 +1,5 @@
 import '@ionic/core';
+import 'stencil-apexcharts';
 
 export default async () => {
   /**

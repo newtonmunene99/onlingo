@@ -13,11 +13,22 @@ export namespace Components {
     }
     interface OnlingoAdmin {
     }
+    interface OnlingoAdminAttachments {
+    }
+    interface OnlingoAdminClassrooms {
+    }
     interface OnlingoAdminDashboard {
     }
     interface OnlingoAdminFacilitators {
     }
+    interface OnlingoAdminPosts {
+    }
     interface OnlingoAdminStudents {
+    }
+    interface OnlingoAdminUsers {
+    }
+    interface OnlingoChangePassword {
+        "redirectUrl": string;
     }
     interface OnlingoClassroom {
         "classroomCode": string;
@@ -39,6 +50,8 @@ export namespace Components {
     }
     interface OnlingoUserDashboard {
     }
+    interface OnlingoUserGrades {
+    }
 }
 declare global {
     interface HTMLAppHomeElement extends Components.AppHome, HTMLStencilElement {
@@ -59,6 +72,18 @@ declare global {
         prototype: HTMLOnlingoAdminElement;
         new (): HTMLOnlingoAdminElement;
     };
+    interface HTMLOnlingoAdminAttachmentsElement extends Components.OnlingoAdminAttachments, HTMLStencilElement {
+    }
+    var HTMLOnlingoAdminAttachmentsElement: {
+        prototype: HTMLOnlingoAdminAttachmentsElement;
+        new (): HTMLOnlingoAdminAttachmentsElement;
+    };
+    interface HTMLOnlingoAdminClassroomsElement extends Components.OnlingoAdminClassrooms, HTMLStencilElement {
+    }
+    var HTMLOnlingoAdminClassroomsElement: {
+        prototype: HTMLOnlingoAdminClassroomsElement;
+        new (): HTMLOnlingoAdminClassroomsElement;
+    };
     interface HTMLOnlingoAdminDashboardElement extends Components.OnlingoAdminDashboard, HTMLStencilElement {
     }
     var HTMLOnlingoAdminDashboardElement: {
@@ -71,11 +96,29 @@ declare global {
         prototype: HTMLOnlingoAdminFacilitatorsElement;
         new (): HTMLOnlingoAdminFacilitatorsElement;
     };
+    interface HTMLOnlingoAdminPostsElement extends Components.OnlingoAdminPosts, HTMLStencilElement {
+    }
+    var HTMLOnlingoAdminPostsElement: {
+        prototype: HTMLOnlingoAdminPostsElement;
+        new (): HTMLOnlingoAdminPostsElement;
+    };
     interface HTMLOnlingoAdminStudentsElement extends Components.OnlingoAdminStudents, HTMLStencilElement {
     }
     var HTMLOnlingoAdminStudentsElement: {
         prototype: HTMLOnlingoAdminStudentsElement;
         new (): HTMLOnlingoAdminStudentsElement;
+    };
+    interface HTMLOnlingoAdminUsersElement extends Components.OnlingoAdminUsers, HTMLStencilElement {
+    }
+    var HTMLOnlingoAdminUsersElement: {
+        prototype: HTMLOnlingoAdminUsersElement;
+        new (): HTMLOnlingoAdminUsersElement;
+    };
+    interface HTMLOnlingoChangePasswordElement extends Components.OnlingoChangePassword, HTMLStencilElement {
+    }
+    var HTMLOnlingoChangePasswordElement: {
+        prototype: HTMLOnlingoChangePasswordElement;
+        new (): HTMLOnlingoChangePasswordElement;
     };
     interface HTMLOnlingoClassroomElement extends Components.OnlingoClassroom, HTMLStencilElement {
     }
@@ -125,13 +168,24 @@ declare global {
         prototype: HTMLOnlingoUserDashboardElement;
         new (): HTMLOnlingoUserDashboardElement;
     };
+    interface HTMLOnlingoUserGradesElement extends Components.OnlingoUserGrades, HTMLStencilElement {
+    }
+    var HTMLOnlingoUserGradesElement: {
+        prototype: HTMLOnlingoUserGradesElement;
+        new (): HTMLOnlingoUserGradesElement;
+    };
     interface HTMLElementTagNameMap {
         "app-home": HTMLAppHomeElement;
         "app-root": HTMLAppRootElement;
         "onlingo-admin": HTMLOnlingoAdminElement;
+        "onlingo-admin-attachments": HTMLOnlingoAdminAttachmentsElement;
+        "onlingo-admin-classrooms": HTMLOnlingoAdminClassroomsElement;
         "onlingo-admin-dashboard": HTMLOnlingoAdminDashboardElement;
         "onlingo-admin-facilitators": HTMLOnlingoAdminFacilitatorsElement;
+        "onlingo-admin-posts": HTMLOnlingoAdminPostsElement;
         "onlingo-admin-students": HTMLOnlingoAdminStudentsElement;
+        "onlingo-admin-users": HTMLOnlingoAdminUsersElement;
+        "onlingo-change-password": HTMLOnlingoChangePasswordElement;
         "onlingo-classroom": HTMLOnlingoClassroomElement;
         "onlingo-classroom-video": HTMLOnlingoClassroomVideoElement;
         "onlingo-facilitator": HTMLOnlingoFacilitatorElement;
@@ -140,6 +194,7 @@ declare global {
         "onlingo-student": HTMLOnlingoStudentElement;
         "onlingo-user": HTMLOnlingoUserElement;
         "onlingo-user-dashboard": HTMLOnlingoUserDashboardElement;
+        "onlingo-user-grades": HTMLOnlingoUserGradesElement;
     }
 }
 declare namespace LocalJSX {
@@ -150,11 +205,22 @@ declare namespace LocalJSX {
     }
     interface OnlingoAdmin {
     }
+    interface OnlingoAdminAttachments {
+    }
+    interface OnlingoAdminClassrooms {
+    }
     interface OnlingoAdminDashboard {
     }
     interface OnlingoAdminFacilitators {
     }
+    interface OnlingoAdminPosts {
+    }
     interface OnlingoAdminStudents {
+    }
+    interface OnlingoAdminUsers {
+    }
+    interface OnlingoChangePassword {
+        "redirectUrl"?: string;
     }
     interface OnlingoClassroom {
         "classroomCode"?: string;
@@ -176,13 +242,20 @@ declare namespace LocalJSX {
     }
     interface OnlingoUserDashboard {
     }
+    interface OnlingoUserGrades {
+    }
     interface IntrinsicElements {
         "app-home": AppHome;
         "app-root": AppRoot;
         "onlingo-admin": OnlingoAdmin;
+        "onlingo-admin-attachments": OnlingoAdminAttachments;
+        "onlingo-admin-classrooms": OnlingoAdminClassrooms;
         "onlingo-admin-dashboard": OnlingoAdminDashboard;
         "onlingo-admin-facilitators": OnlingoAdminFacilitators;
+        "onlingo-admin-posts": OnlingoAdminPosts;
         "onlingo-admin-students": OnlingoAdminStudents;
+        "onlingo-admin-users": OnlingoAdminUsers;
+        "onlingo-change-password": OnlingoChangePassword;
         "onlingo-classroom": OnlingoClassroom;
         "onlingo-classroom-video": OnlingoClassroomVideo;
         "onlingo-facilitator": OnlingoFacilitator;
@@ -191,6 +264,7 @@ declare namespace LocalJSX {
         "onlingo-student": OnlingoStudent;
         "onlingo-user": OnlingoUser;
         "onlingo-user-dashboard": OnlingoUserDashboard;
+        "onlingo-user-grades": OnlingoUserGrades;
     }
 }
 export { LocalJSX as JSX };
@@ -200,9 +274,14 @@ declare module "@stencil/core" {
             "app-home": LocalJSX.AppHome & JSXBase.HTMLAttributes<HTMLAppHomeElement>;
             "app-root": LocalJSX.AppRoot & JSXBase.HTMLAttributes<HTMLAppRootElement>;
             "onlingo-admin": LocalJSX.OnlingoAdmin & JSXBase.HTMLAttributes<HTMLOnlingoAdminElement>;
+            "onlingo-admin-attachments": LocalJSX.OnlingoAdminAttachments & JSXBase.HTMLAttributes<HTMLOnlingoAdminAttachmentsElement>;
+            "onlingo-admin-classrooms": LocalJSX.OnlingoAdminClassrooms & JSXBase.HTMLAttributes<HTMLOnlingoAdminClassroomsElement>;
             "onlingo-admin-dashboard": LocalJSX.OnlingoAdminDashboard & JSXBase.HTMLAttributes<HTMLOnlingoAdminDashboardElement>;
             "onlingo-admin-facilitators": LocalJSX.OnlingoAdminFacilitators & JSXBase.HTMLAttributes<HTMLOnlingoAdminFacilitatorsElement>;
+            "onlingo-admin-posts": LocalJSX.OnlingoAdminPosts & JSXBase.HTMLAttributes<HTMLOnlingoAdminPostsElement>;
             "onlingo-admin-students": LocalJSX.OnlingoAdminStudents & JSXBase.HTMLAttributes<HTMLOnlingoAdminStudentsElement>;
+            "onlingo-admin-users": LocalJSX.OnlingoAdminUsers & JSXBase.HTMLAttributes<HTMLOnlingoAdminUsersElement>;
+            "onlingo-change-password": LocalJSX.OnlingoChangePassword & JSXBase.HTMLAttributes<HTMLOnlingoChangePasswordElement>;
             "onlingo-classroom": LocalJSX.OnlingoClassroom & JSXBase.HTMLAttributes<HTMLOnlingoClassroomElement>;
             "onlingo-classroom-video": LocalJSX.OnlingoClassroomVideo & JSXBase.HTMLAttributes<HTMLOnlingoClassroomVideoElement>;
             "onlingo-facilitator": LocalJSX.OnlingoFacilitator & JSXBase.HTMLAttributes<HTMLOnlingoFacilitatorElement>;
@@ -211,6 +290,7 @@ declare module "@stencil/core" {
             "onlingo-student": LocalJSX.OnlingoStudent & JSXBase.HTMLAttributes<HTMLOnlingoStudentElement>;
             "onlingo-user": LocalJSX.OnlingoUser & JSXBase.HTMLAttributes<HTMLOnlingoUserElement>;
             "onlingo-user-dashboard": LocalJSX.OnlingoUserDashboard & JSXBase.HTMLAttributes<HTMLOnlingoUserDashboardElement>;
+            "onlingo-user-grades": LocalJSX.OnlingoUserGrades & JSXBase.HTMLAttributes<HTMLOnlingoUserGradesElement>;
         }
     }
 }

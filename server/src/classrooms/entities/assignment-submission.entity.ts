@@ -1,10 +1,4 @@
-import {
-  ChildEntity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { ChildEntity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 import { Assignment } from 'src/classrooms/entities/assignment.entity';
 import { Comment } from 'src/classrooms/entities/comment.entity';
 import { Grade } from 'src/classrooms/entities/grade.entity';
@@ -26,7 +20,7 @@ export class AssignmentSubmission extends Comment {
   )
   attachments: AssignmentSubmissionAttachment[];
 
-  @OneToOne(() => Grade, (grade) => grade.assignmentSubmisstion, {
+  @OneToOne(() => Grade, (grade) => grade.assignmentSubmission, {
     nullable: true,
   })
   grade: Grade;

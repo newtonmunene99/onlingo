@@ -1,13 +1,20 @@
-import { IsAlphanumeric, IsEmail, IsString, MinLength } from 'class-validator';
+import {
+  IsAlphanumeric,
+  IsEmail,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
 
 export class ChangePasswordDTO {
   @IsString()
   @IsAlphanumeric()
-  @MinLength(3)
+  @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm, {
+    message: 'Password must be at least 8 characters long and alphanumeric',
+  })
   newPassword: string;
 
   @IsString()
-  @IsAlphanumeric()
   password: string;
 }
 
@@ -20,7 +27,9 @@ export class InitiateResetPasswordDTO {
 export class ResetPasswordDTO extends InitiateResetPasswordDTO {
   @IsString()
   @IsAlphanumeric()
-  @MinLength(3)
+  @Matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm, {
+    message: 'Password must be at least 8 characters long and alphanumeric',
+  })
   newPassword: string;
 
   @IsString()

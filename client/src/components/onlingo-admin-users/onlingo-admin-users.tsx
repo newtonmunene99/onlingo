@@ -1,49 +1,36 @@
 import { Component, h, State } from '@stencil/core';
 import Swal from 'sweetalert2';
-import { User } from '../../interfaces/user.interface';
+import { User, UserWithPopUpOptions } from '../../interfaces/user.interface';
 import { apiService } from '../../services/api';
 
 @Component({
-  tag: 'onlingo-admin',
-  styleUrl: 'onlingo-admin.scss',
+  tag: 'onlingo-admin-users',
+  styleUrl: 'onlingo-admin-users.scss',
   shadow: false,
 })
-export class OnlingoAdmin {
-  @State() sidebarOpen = true;
-  @State() popUpOpen = false;
-  @State() user: User;
+export class OnlingoAdminUsers {
+  @State() users: UserWithPopUpOptions[] = [];
   @State() editUserModalOpen = false;
+
   @State() editUser: User;
 
-  links = [
-    {
-      name: 'Home',
-      url: '/admin/',
-    },
-    {
-      name: 'Users',
-      url: '/admin/users',
-    },
-    {
-      name: 'Classrooms',
-      url: '/admin/classrooms',
-    },
-    {
-      name: 'Posts',
-      url: '/admin/posts',
-    },
-    {
-      name: 'Attachments',
-      url: '/admin/attachments',
-    },
-  ];
-
   componentDidLoad() {
-    this.getProfile();
+    this.getAllUsers();
   }
 
-  async getProfile() {
-    this.user = await apiService.getProfile();
+  async getAllUsers() {
+    try {
+      const users = await apiService.getAllUsers();
+
+      this.users = users.map(user => {
+        return {
+          ...user,
+          popupOpen: false,
+        };
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   private handleUpdateUser = async () => {
@@ -75,12 +62,45 @@ export class OnlingoAdmin {
       this.editUserModalOpen = false;
       this.clearEditVariables();
 
-      this.getProfile();
+      this.users = [];
+      this.getAllUsers();
 
       Swal.fire({
         title: `Success`,
         icon: 'success',
         html: `User has been updated`,
+      });
+    }
+  };
+
+  private handleDeleteUser = async (user: User) => {
+    const result = await Swal.fire({
+      title: 'Delete User',
+      html: 'Do you want to proceed and delete this user?',
+      allowOutsideClick: () => !Swal.isLoading,
+      allowEscapeKey: () => !Swal.isLoading,
+      allowEnterKey: () => !Swal.isLoading,
+      showLoaderOnConfirm: true,
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      preConfirm: async () => {
+        try {
+          return await apiService.deleteUser(user.id);
+        } catch (error) {
+          const errorMessage = error?.response?.data?.message;
+          Swal.showValidationMessage(errorMessage ?? 'Please try again');
+        }
+      },
+    });
+
+    if (result.isConfirmed) {
+      this.users = [];
+      await this.getAllUsers();
+
+      Swal.fire({
+        title: `Success`,
+        icon: 'success',
+        html: `User has been deleted`,
       });
     }
   };
@@ -91,86 +111,107 @@ export class OnlingoAdmin {
 
   render() {
     return (
-      <div class="onlingo-admin h-screen w-screen flex flex-row flex-nowrap">
-        <nav
-          class={`pr-14 z-10 sidenav h-full w-3/4 top-0 absolute ${
-            this.sidebarOpen ? 'left-0 md:w-1/4 md:relative' : '-left-3/4'
-          } bg-primary flex flex-col justify-center items-center`}
-        >
-          {this.links.map(link => (
-            <stencil-route-link url={link.url}>
-              <button class="h-14 w-full font-bold text-text-heading-inverse hover:text-secondary">{link.name}</button>
-            </stencil-route-link>
-          ))}
-        </nav>
-        <div class="w-full">
-          <div class="header w-full flex flex-row justify-between items-center">
-            <div class="ml-4">
-              <ion-icon
-                name={this.sidebarOpen ? 'close' : 'menu-outline'}
-                class="z-40 md:z-0 bg-background md:bg-primary  shadow-md rounded-full m-2 p-2 text-4xl text-text-heading md:text-text-heading-inverse"
-                onClick={() => (this.sidebarOpen = !this.sidebarOpen)}
-              ></ion-icon>
-            </div>
-            <div class="p-2">
-              <h1 class=" font-bold text-lg text-primary">Onlingo | Admin</h1>
-            </div>
-            <div class="mr-8 p-2">
-              {this.user ? (
-                <div
-                  class="relative inline-block text-left"
-                  onClick={() => {
-                    this.popUpOpen = !this.popUpOpen;
-                  }}
-                >
-                  <button class="border-2 border-primary rounded-sm p-2 text-text-heading bg-transparent hover:bg-primary hover:text-text-heading-inverse">
-                    {this.user.firstName} {this.user.lastName}
-                  </button>
-                  {this.popUpOpen ? (
-                    <div
-                      class="origin-top-right absolute z-50 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
-                      role="menu"
-                      aria-orientation="vertical"
-                      aria-labelledby="options-menu"
-                    >
-                      <div class="py-1">
-                        <a
-                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                          role="menuitem"
-                          onClick={() => {
-                            this.editUser = this.user;
-                            this.editUserModalOpen = true;
-                          }}
-                        >
-                          Edit Profile
-                        </a>
+      <div class="onlingo-admin-users">
+        <div class="wrapper">
+          <div class="inner-wrapper">
+            <div class="header-wrapper">
+              <div class="table-border">
+                <table>
+                  <thead class="">
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">DOB</th>
+                      <th scope="col">Gender</th>
+                      <th scope="col">Role</th>
+                      <th scope="col">
+                        <span></span>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.users.map((user, userIndex) => {
+                      const popUpOpen = user.popupOpen;
+                      const dob = new Date(user.dob);
 
-                        <stencil-route-link url={'/admin/change-password'}>
-                          <a class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">
-                            Change Password
-                          </a>
-                        </stencil-route-link>
-                      </div>
-                      <div class="py-1">
-                        <a
-                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                          role="menuitem"
-                          onClick={() => {
-                            apiService.logout();
-                            apiService.logout();
-                            location.replace(`/`);
-                          }}
-                        >
-                          Logout
-                        </a>
-                      </div>
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
+                      return (
+                        <tr>
+                          <td>
+                            <p>
+                              {user.firstName} {user.lastName}
+                            </p>
+                          </td>
+                          <td>
+                            <p>{user.email}</p>
+                          </td>
+                          <td>
+                            <p>
+                              {dob?.getDate()}/{dob?.getMonth() + 1}/{dob?.getFullYear()}
+                            </p>
+                          </td>
+                          <td>
+                            <p>{user.gender}</p>
+                          </td>
+                          <td>
+                            <p>{user.role}</p>
+                          </td>
+                          <td>
+                            <div class="relative inline-block text-left">
+                              <ion-icon
+                                name="ellipsis-horizontal-outline"
+                                class={`rounded-full m-2 p-2 text-2xl 'text-text-heading' hover:shadow-md`}
+                                onClick={() => {
+                                  this.users = this.users.map((user, index) => {
+                                    let u = user;
+                                    if (userIndex === index) {
+                                      u.popupOpen = !popUpOpen;
+                                      return u;
+                                    }
+                                    u.popupOpen = false;
+                                    return u;
+                                  });
+                                }}
+                              ></ion-icon>
+                              {popUpOpen ? (
+                                <div
+                                  class="origin-top-right absolute z-50 right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100"
+                                  role="menu"
+                                  aria-orientation="vertical"
+                                  aria-labelledby="options-menu"
+                                >
+                                  <div class="py-1">
+                                    <a
+                                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                      role="menuitem"
+                                      onClick={() => {
+                                        this.editUser = user;
+                                        this.editUserModalOpen = true;
+                                      }}
+                                    >
+                                      Edit User
+                                    </a>
+                                    <a
+                                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                                      role="menuitem"
+                                      onClick={() => {
+                                        this.handleDeleteUser(user);
+                                      }}
+                                    >
+                                      Delete User
+                                    </a>
+                                  </div>
+                                </div>
+                              ) : null}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-          <ion-nav class="body flex-1 bg-background relative" id="admin" />
         </div>
         {this.editUserModalOpen ? (
           <div class="fixed z-10 inset-0 overflow-y-auto">

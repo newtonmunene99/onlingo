@@ -7,6 +7,9 @@ export class ClassroomDTO {
   @MinLength(8)
   name: string;
 
+  @IsString()
+  unitCode: string;
+
   @IsOptional()
   @IsString()
   description: string;

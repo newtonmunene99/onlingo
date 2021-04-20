@@ -1,7 +1,7 @@
 import { Component, h, Prop, State } from '@stencil/core';
 import Swal from 'sweetalert2';
 import { isAssignment, toDatetimeLocal } from '../../constants';
-import { Assignment, AssignmentSubmission, Classroom, ClassroomMember, IAttachment, Post, PostWithPopUpOptions } from '../../interfaces/classroom.interface';
+import { Assignment, AssignmentSubmission, Classroom, ClassroomMember, Attachment, Post, PostWithPopUpOptions } from '../../interfaces/classroom.interface';
 import { User } from '../../interfaces/user.interface';
 import { apiService, classroomsSocketClient } from '../../services/api';
 
@@ -281,7 +281,7 @@ export class OnlingoClassroom {
     }
   };
 
-  private handleDeleteAttachment = async (post: Post, attachment: IAttachment) => {
+  private handleDeleteAttachment = async (post: Post, attachment: Attachment) => {
     const result = await Swal.fire({
       title: 'Are you sure?',
       showCancelButton: true,
@@ -290,7 +290,7 @@ export class OnlingoClassroom {
       allowOutsideClick: () => !Swal.isLoading(),
       preConfirm: async () => {
         try {
-          return await apiService.deleteAttachment(this.classroom.code, post.id, attachment);
+          return await apiService.deletePostAttachment(this.classroom.code, post.id, attachment);
         } catch (error) {
           const errorMessage = error?.response?.data?.message;
           Swal.showValidationMessage(errorMessage ?? 'Please try again');
@@ -569,10 +569,11 @@ export class OnlingoClassroom {
         console.log(data);
       });
 
-      this.socket.on('new virtual classroom', data => {
+      this.socket.on('new virtual classroom', async data => {
         console.log('new virtual classroom');
         console.log(data);
-        Swal.fire({
+
+        const result = await Swal.fire({
           title: 'Virtual classroom currently in session',
           position: 'bottom-right',
           showCancelButton: false,
@@ -582,6 +583,10 @@ export class OnlingoClassroom {
           allowOutsideClick: false,
           backdrop: false,
         });
+
+        if (result.isConfirmed) {
+          location.replace(`/user/classrooms/${this.classroom.code}/video-sessions/${data?.code}`);
+        }
       });
 
       this.getProfile();
@@ -727,7 +732,8 @@ export class OnlingoClassroom {
                       {!isAssignment(post) ? (
                         <div class="author">
                           <h1 class="font-bold">
-                            {post.author.user.firstName} {post.author.user.lastName}
+                            {post.author.user.firstName} {post.author.user.lastName}{' '}
+                            {post.author.role === 'facilitator' ? <span class="rounded-full bg-secondary p-2 text-text-heading-inverse">{post.author.role}</span> : null}
                           </h1>
                         </div>
                       ) : null}
@@ -864,12 +870,12 @@ export class OnlingoClassroom {
                           <div
                             class="flex flex-col justify-center bg-white px-4 py-6 rounded-md hover:bg-gray-100 flex-1"
                             onClick={() => {
-                              apiService.downloadAttachment(this.classroom?.code, post?.id, attachment);
+                              apiService.downloadPostAttachment(this.classroom?.code, post?.id, attachment);
                             }}
                           >
-                            <h1 class="font-semibold">{attachment.title}</h1>
+                            <h1 class="font-semibold">{attachment.originalFileName}</h1>
                             <p>
-                              <small>{attachment.originalFileName}</small>
+                              <small>{attachment.title}</small>
                             </p>
                           </div>
 
@@ -1590,16 +1596,17 @@ export class OnlingoClassroom {
                                     class="flex flex-col justify-center bg-white px-4 py-6 rounded-md hover:bg-gray-100 flex-1"
                                     onClick={async () => {
                                       try {
-                                        await apiService.downloadAttachment(this.classroom?.code, submission?.id, attachment);
+                                        await apiService.downloadAssignmentSubmissionAttachment(this.classroom?.code, submission?.id, submission.id, attachment);
                                       } catch (error) {
+                                        console.error({ ...error });
                                         const errorMessage = error?.response?.data?.message;
                                         Swal.fire({ title: 'Error!', text: errorMessage ?? 'Please try again' });
                                       }
                                     }}
                                   >
-                                    <h1 class="font-semibold">{attachment.title}</h1>
+                                    <h1 class="font-semibold">{attachment.originalFileName}</h1>
                                     <p>
-                                      <small>{attachment.originalFileName}</small>
+                                      <small>{attachment.title}</small>
                                     </p>
                                   </div>
                                 </div>
