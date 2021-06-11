@@ -13,16 +13,17 @@ Specific instructions are included inside the `client/` and `server/` folders
 
 ## Screenshots
 
-| Screenshot                                                      |
-| --------------------------------------------------------------- |
-| ![Screenshot 1](/screenshots/screenshot1.png "Screenshot 1")    |
-| ![Screenshot 2](/screenshots/screenshot2.png "Screenshot 2")    |
-| ![Screenshot 3](/screenshots/screenshot3.png "Screenshot 3")    |
-| ![Screenshot 4](/screenshots/screenshot4.png "Screenshot 4")    |
-| ![Screenshot 5](/screenshots/screenshot5.png "Screenshot 5")    |
-| ![Screenshot 6](/screenshots/screenshot6.png "Screenshot 6")    |
-| ![Screenshot 7](/screenshots/screenshot7.png "Screenshot 7")    |
-| ![Screenshot 8](/screenshots/screenshot8.png "Screenshot 8")    |
-| ![Screenshot 9](/screenshots/screenshot9.png "Screenshot 9")    |
-| ![Screenshot 10](/screenshots/screenshot10.png "Screenshot 10") |
-| ![Screenshot 11](/screenshots/screenshot11.png "Screenshot 12") |
+
+| Screenshot                                                                                     |
+| ---------------------------------------------------------------------------------------------- |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot1.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot2.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot3.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot4.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot5.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot6.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot7.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot8.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot9.png">  |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot10.png"> |
+| <img src="https://github.com/newtonmunene99/onlingo/blob/master/screenshots/Screenshot11.png"> |
