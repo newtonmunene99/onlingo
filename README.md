@@ -8,8 +8,8 @@ Specific instructions are included inside the `client/` and `server/` folders
 
 ## TODO
 
-[ ] - Rewrite in React
-[ ] - Improve server code
+- [ ] - Rewrite in React
+- [ ] - Improve server code
 
 ## Screenshots
 
